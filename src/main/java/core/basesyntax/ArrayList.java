@@ -50,7 +50,10 @@ public class ArrayList<T> implements List<T> {
     public T remove(int index) {
         checkIndex(index);
         T removed = elements[index];
-        System.arraycopy(elements, index + 1, elements, index, size - index - 1);
+        int moveCount = size - index - 1;
+        if (moveCount > 0) {
+            System.arraycopy(elements, index + 1, elements, index, moveCount);
+        }
         elements[--size] = null;
         return removed;
     }
@@ -58,7 +61,7 @@ public class ArrayList<T> implements List<T> {
     @Override
     public T remove(T element) {
         for (int i = 0; i < size; i++) {
-            if (elements[i] == element || (element != null && element.equals(elements[i]))) {
+            if ((elements[i] == element) || (element != null && element.equals(elements[i]))) {
                 return remove(i);
             }
         }
@@ -84,6 +87,9 @@ public class ArrayList<T> implements List<T> {
     @SuppressWarnings("unchecked")
     private void resize() {
         int newCapacity = (int) (elements.length * GROWTH_FACTOR);
+        if (newCapacity == elements.length) {
+            newCapacity++; // обязательно увеличиваем минимум на 1
+        }
         T[] newArray = (T[]) new Object[newCapacity];
         System.arraycopy(elements, 0, newArray, 0, size);
         elements = newArray;
